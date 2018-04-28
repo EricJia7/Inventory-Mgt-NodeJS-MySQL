@@ -19,6 +19,8 @@
   "dependencies": {
     "dotenv": "^5.0.1",
     "inquirer": "^5.2.0",
-    "mysql": "^2.15.0"
+    "mysql": "^2.15.0",
+    "mysql2": "^1.5.3",
+    "sequelize": "^4.37.6"
   }
 }
