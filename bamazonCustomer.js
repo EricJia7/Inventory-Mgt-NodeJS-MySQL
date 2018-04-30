@@ -56,8 +56,13 @@ function showInventory() {
     connection.query('SELECT * FROM products', function (err, result, fields) {
         if (err) throw err;
         console.log('\n Here is the current inventory list \n');
-        result.map(function(ele){
+        console.log('**************************************************************************************************************** \n');
+        result.map(function(ele,index){
             console.log(ele.id + ' : ' + ele.product_name + ' , Qty: ' + ele.stock_quantity + ' , Price: ' + ele.price + '\n');
+            if(index === result.length -1) {
+                console.log('****************************************************************************************************************');
+                custCheckOut();
+            };
         });
     });
     connection.end();
@@ -83,8 +88,9 @@ function getSingleItem(id,qty) {
             result.stock_quantity = result.stock_quantity - qty;
             result.save();
             console.log('\n Item is in Stock!. You will be charged for ' + qty*result.price + ' dollars. \n')
-            sequelize.connectionManager.close().then(() => console.log('shut down gracefully'))
         };
+    }).then(() => {
+        console.log('End of transaction! \n');
     })
     .catch(err => {
         console.error('Unable to connect to the database:', err);
@@ -117,6 +123,8 @@ function custCheckOut() {
     });
 };
 
-// showInventory();
+showInventory();
 
-custCheckOut();
+
+
+
