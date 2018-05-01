@@ -74,11 +74,11 @@ class Operation {
     viewAllProd() {
         Products.findAll().then((result) => {
             console.log('\n Here is the current inventory list \n');
-            console.log('**************************************************************************************************************** \n');
+            console.log('************************************************************************************************************************** \n');
             result.map((ele,index) => {
                 console.log(ele.id + ' : ' + ele.product_name + ' , Qty: ' + ele.stock_quantity + ' , Price: ' + ele.price + '\n');
                 if(index === result.length -1) {
-                    console.log('****************************************************************************************************************');
+                    console.log('**************************************************************************************************************************');
                     managerView();
                 };
             })
@@ -86,28 +86,134 @@ class Operation {
     }
 
     viewLowInvProd() {
-        let Op = Sequelize.Op;
-        Products.findAll({
-            where: {
-                [Op.lte]: [5]
-            }
-        }).then((result) => {
-            console.log(result)
+
+        inquirer.prompt([
+            {
+                type: 'input',
+                message: 'Please input the qty of inventory(min): ',
+                name: 'quantity',
+            },
+        ]).then(ans => {
+            let qtyInput = parseInt(ans.quantity);
+            let Op = Sequelize.Op;
+            Products.findAll({
+                where: {
+                    stock_quantity: {
+                        [Op.lte]: [qtyInput]
+                    }
+                }
+            }).then((result) => {
+                console.log('\n Here are the products which have inventory of less or equal to 5 \n');
+                console.log('************************************************************************************************************************** \n');
+                result.map((ele,index) => {
+                    console.log(ele.id + ' : ' + ele.product_name + ' , Qty: ' + ele.stock_quantity + ' , Price: ' + ele.price + '\n');
+                    if(index === result.length -1) {
+                        console.log('**************************************************************************************************************************');
+                        managerView();
+                    };
+                })
+            });
         });
     }
 
     addInv() {
-        Products.findAll().then((result) => console.log(JSON.stringify(result)));
+        inquirer.prompt([
+            {
+                type: 'input',
+                message: 'What \'s ID of the product you want to add more inventory',
+                name: 'productID',
+            }
+        ]).then(ans => {
+            let idInput = parseInt(ans.productID);
+            Products.findAll({
+                where: {
+                    id: idInput
+                }
+            }).then((result) => {
+                console.log('\n Current inventory for item# ' + idInput + ' is: ' + result[0].stock_quantity + '\n');
+            }).then(() => {
+                inquirer.prompt([
+                    {
+                        type: 'input',
+                        message: 'Please input the qty you want to add to the inventory',
+                        name: 'productQty',
+                    }
+                ]).then(ans => {
+                    let qtyInput = parseInt(ans.productQty);
+                    let Op = Sequelize.Op;
+                    Products.findAll({
+                        where: {
+                            id: idInput
+                        }
+                    }).then((result) => {
+                        result[0].stock_quantity = result[0].stock_quantity + qtyInput;
+                        result[0].save();
+                        console.log('\n Inventory has been updated and here is the updated info: \n');
+                        console.log(result[0].id + ' : ' + result[0].product_name + ' , Qty: ' + result[0].stock_quantity + ' , Price: ' + result[0].price + '\n');
+                        managerView();
+                    })
+                })
+            });
+        });
     }
 
     addNewProd() {
-        Products.findAll().then((result) => console.log(JSON.stringify(result)));
+        inquirer.prompt([
+            {
+                type: 'input',
+                message: 'What \'s ID of the product you want to add to the store?',
+                name: 'productID',
+            },
+            {
+                type: 'input',
+                message: 'What \'s the product name?',
+                name: 'productName',
+            },
+            {
+                type: 'input',
+                message: 'Which department is this item belongs to?',
+                name: 'productDept',
+            },
+            {
+                type: 'input',
+                message: 'What \'s the selling price for this item?',
+                name: 'productPrice',
+            }, 
+            {
+                type: 'input',
+                message: 'What \'s initial stock for this item?',
+                name: 'productStock',
+            }
+        ]).then((ans) => {
+            let [productID,productName, productDept, productPrice, productStock]= [ans.productID, ans.productName, ans.productDept, ans.productPrice, ans.productStock];
+            Products.create({
+                id: productID,
+                product_name: productName,
+                department_name: productDept,
+                price: productPrice,
+                stock_quantity: productStock,
+            }).then(() => {
+                Products.findAll({
+                    where: {
+                        id: productID
+                    }
+                }).then((result) => {
+                    console.log('\n Item has been successfully added to store database \n');
+                    console.log(result[0].id + ' : ' + result[0].product_name + ' , Qty: ' + result[0].stock_quantity + ' , Price: ' + result[0].price + '\n');
+                    managerView();
+                })
+            })
+        })
     }
 
     logOut() {
         sequelize.close();
     }
 
-}
+};
 
 managerView();
+
+
+
+
