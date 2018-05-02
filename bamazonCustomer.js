@@ -1,8 +1,8 @@
-
 require("dotenv").config();
 
 const listOfKeys = require("./keys.js");
 const inquirer = require('inquirer');
+const chalk = require('chalk');
 
 // npm mysql
 const mysql = require('mysql');
@@ -25,6 +25,7 @@ const sequelize = new Sequelize('bamazon', listOfKeys.mysql.user, listOfKeys.mys
       acquire: 30000,
       idle: 10000
     },
+    dialectOptions: {decimalNumbers: true},
     logging: false
   });
 const Products = sequelize.define('products',{
@@ -34,8 +35,13 @@ const Products = sequelize.define('products',{
     },
     product_name: Sequelize.STRING,
     department_name:Sequelize.STRING,
-    price: Sequelize.FLOAT,
+    price: {
+        type:Sequelize.DECIMAL(10,3)
+    },
     stock_quantity: Sequelize.INTEGER,
+    product_sales: {
+        type:Sequelize.DECIMAL(10,3)
+    }
 }, {
     timestamps:false,
 });
@@ -55,12 +61,12 @@ function showInventory() {
     connectDB();
     connection.query('SELECT * FROM products', function (err, result, fields) {
         if (err) throw err;
-        console.log('\n Here is the current inventory list \n');
-        console.log('**************************************************************************************************************** \n');
+        console.log(chalk.green('\n Here is the current inventory list \n'));
+        console.log(chalk.blue('**************************************************************************************************************** \n'));
         result.map(function(ele,index){
             console.log(ele.id + ' : ' + ele.product_name + ' , Qty: ' + ele.stock_quantity + ' , Price: ' + ele.price + '\n');
             if(index === result.length -1) {
-                console.log('****************************************************************************************************************');
+                console.log(chalk.blue('****************************************************************************************************************'));
                 custCheckOut();
             };
         });
@@ -73,7 +79,7 @@ function getSingleItem1(id,qty) {
     connection.query('SELECT * FROM `products` WHERE `id` =' + id, function (err, result, fields) {
         if (err) throw err;
         if(result[0].stock_quantity < qty) {
-            console.log('\n Sorry, inventory runs low or Insufficient quantity \n');
+            console.log(chalk.red('\n Sorry, inventory runs low or Insufficient quantity \n'));
         }
     });
     connection.end();
@@ -86,11 +92,13 @@ function getSingleItem(id,qty) {
             console.log('\n Sorry, inventory runs low or Insufficient quantity \n');
         } else {
             result.stock_quantity = result.stock_quantity - qty;
+            result.product_sales = result.product_sales + qty*result.price;
             result.save();
             console.log('\n Item is in Stock!. You will be charged for ' + qty*result.price + ' dollars. \n')
         };
     }).then(() => {
         console.log('End of transaction! \n');
+        custCheckOut();
     })
     .catch(err => {
         console.error('Unable to connect to the database:', err);
@@ -115,8 +123,8 @@ function custCheckOut() {
             name: 'isOrderPlaced'
         }
     ]).then(ans => {
-        let prodID = ans.productID;
-        let prodQty = ans.productQty;
+        let prodID = parseInt(ans.productID);
+        let prodQty = parseFloat(ans.productQty);
         if(ans.isOrderPlaced) {
             getSingleItem(prodID,prodQty);
         }

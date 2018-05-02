@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/jiapurdue/Inventory-Mgt-NodeJS-MySQL#readme",
   "dependencies": {
+    "chalk": "^2.4.1",
     "dotenv": "^5.0.1",
     "inquirer": "^5.2.0",
     "mysql": "^2.15.0",

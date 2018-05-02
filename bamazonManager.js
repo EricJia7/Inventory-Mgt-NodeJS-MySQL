@@ -2,6 +2,7 @@ require("dotenv").config();
 
 const listOfKeys = require("./keys.js");
 const inquirer = require('inquirer');
+const chalk = require('chalk');
 
 //npm sequelize 
 const Sequelize = require('sequelize');
@@ -15,6 +16,7 @@ const sequelize = new Sequelize('bamazon', listOfKeys.mysql.user, listOfKeys.mys
       acquire: 30000,
       idle: 10000
     },
+    dialectOptions: {decimalNumbers: true},
     logging: false
   });
 
@@ -25,8 +27,13 @@ const Products = sequelize.define('products',{
     },
     product_name: Sequelize.STRING,
     department_name:Sequelize.STRING,
-    price: Sequelize.FLOAT,
+    price: {
+        type:Sequelize.DECIMAL(10,3)
+    },
     stock_quantity: Sequelize.INTEGER,
+    product_sales: {
+        type:Sequelize.DECIMAL(10,3)
+    }
 }, {
     timestamps:false,
 });
