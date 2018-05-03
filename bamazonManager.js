@@ -131,7 +131,7 @@ class Operation {
                 name: 'productID',
             }
         ]).then(ans => {
-            let idInput = parseInt(ans.productID);
+            let idInput = ans.productID;
             Products.findAll({
                 where: {
                     id: idInput

@@ -94,14 +94,14 @@ function getSingleItem(id,qty) {
             result.stock_quantity = result.stock_quantity - qty;
             result.product_sales = result.product_sales + qty*result.price;
             result.save();
-            console.log('\n Item is in Stock!. You will be charged for ' + qty*result.price + ' dollars. \n')
+            console.log(chalk.green('\n Item is in Stock!. You will be charged for ' + qty*result.price + ' dollars. \n'));
         };
     }).then(() => {
-        console.log('End of transaction! \n');
+        console.log(chalk.blue('Transaction Successful! \n'));
         custCheckOut();
     })
     .catch(err => {
-        console.error('Unable to connect to the database:', err);
+        console.error(chalk.red('Unable to connect to the database:', err));
       });
 };
 
