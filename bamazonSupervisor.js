@@ -79,10 +79,12 @@ function createDepartment() {
             over_head_costs: departInput[1],
             product_sales: departInput[2],
             total_profit: departInput[3],
+        }).then(() => {
+            viewDepartment();
+        }).then(() => {
+            console.log(chalk.green('\n' + deptName + ' has been successfully added to the department database!'));
         })
-    }).then(() => {
-        console.log(chalk.green('\n' + deptName + ' has been successfully added to the department database!'));
-    }).then(() => viewDepartment());
+    })
 };
 
 function logout() {
