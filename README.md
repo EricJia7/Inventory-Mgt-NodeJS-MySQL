@@ -13,13 +13,7 @@
     * HOST = {your localhost name}
     * MYSQL_PASSWORD = {your password}
     * USER= {your username}
-
-# MySQL Password
-
-HOST=localhost 
-MYSQL_PASSWORD=3027388Abc
-USER=root
-
+ 
 ## How to run
 
 * Customer Interface 
