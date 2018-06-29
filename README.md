@@ -33,7 +33,7 @@
     * In node command line interface, 'node bamazonSupervisor.js' to access the interface portal for Supervisor. 
     * It will allow Supervisor to View Product Sales by Department and Add new Department. 
 
-### Engjoy!
+
 
 
 
